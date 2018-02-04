@@ -33,6 +33,8 @@ For supporting the MEC layer - In addition to the three input files of the WTE (
 a JSON database file, with a specific structure, describing the network element's database.
 Each NE is emulated as a docker container and exposes a REST server used for the MEC layer.
 
+![logo](./MEC-Arch.png)
+
 ### Prerequisites
 
 These instructions are for Ubuntu.
