@@ -61,3 +61,4 @@ CMD ["/root/start.sh"]
 # finishing touches
 EXPOSE 22
 EXPOSE 830
+EXPOSE 700
