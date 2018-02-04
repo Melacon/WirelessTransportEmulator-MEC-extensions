@@ -1,0 +1,170 @@
+{
+ "network-elements": 
+ {
+ "NE1": {
+  "zones" : [
+    {
+        "zoneId": "zone01",
+     "accessPoints" : [
+    {
+            "accessPointId": "001010000000000000000000000000001",
+            "locationInfo": {
+            "latitude":    "80.123",  
+            "longitude":    "70.123",  
+            "altitude":    "10.0",  
+            "accuracy":    "0"  
+             },
+            "connectionType": "Macro",
+            "operationStatus": "Serviceable",
+            "numberOfUsers": "15",
+            "interestRealm": "LA",
+            "resourceURL": "http://example.com/exampleAPI/location/v1/zones/zone01/accessPoints/ap001",
+	    "users": [
+    	    { 
+   	      "address": "acr:10.0.0.1", 
+	      "accessPointId": "001010000000000000000000000000001", 
+	      "zoneId": "zone01", 
+	      "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.1" 
+    	    },    
+    	    {    
+	      "address": "acr:10.0.0.2", 
+	      "accessPointId": "001010000000000000000000000000001", 
+	      "zoneId": "zone01", 
+	      "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.2"
+	    }
+    	    ]
+    },
+    {
+          "accessPointId": "101010000000000000000000000000001",
+            "locationInfo": {
+            "latitude":    "90.123",  
+            "longitude":    "80.123",  
+            "altitude":    "15.0",  
+            "accuracy":    "0.1"  
+             },
+            "connectionType": "Macro",
+            "operationStatus": "Serviceable",
+            "numberOfUsers": "20",
+            "interestRealm": "NYC",
+            "resourceURL": "http://example.com/exampleAPI/location/v1/zones/zone01/accessPoints/ap101",
+	     "users": [
+    	    { 
+   	      "address": "acr:10.0.0.3", 
+	      "accessPointId": "101010000000000000000000000000001", 
+	      "zoneId": "zone01", 
+	      "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.3" 
+  	    }
+    	    ]
+    }
+    ]  
+     },
+    {    
+        "zoneId": "zone02",
+     "accessPoints": [
+    {
+
+            "accessPointId": "110010000000000000000000000000001",
+            "locationInfo": {
+            "latitude":    "85.123",  
+            "longitude":    "75.123",  
+            "altitude":    "20.0",  
+            "accuracy":    "0.3"  
+             },
+            "connectionType": "Macro",
+            "operationStatus": "Serviceable",
+            "numberOfUsers": "10",
+            "interestRealm": "TLV",
+            "resourceURL": "http://example.com/exampleAPI/location/v1/zones/zone01/accessPoints/ap110",
+            "users": [
+    	    { 
+   	      "address": "acr:10.0.0.4", 
+	      "accessPointId": "110010000000000000000000000000001", 
+	      "zoneId": "zone02", 
+	      "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.4" 
+
+  	    }
+    	    ]
+    }
+   ]
+ }
+ ]
+},
+ "NE2":{
+	 "zones" : [
+{		
+"zoneId": "zone03",
+"accessPoints" : [
+{
+            "accessPointId": "001010000000000000000000000000000",
+            "locationInfo": {
+            "latitude":    "80.123",  
+            "longitude":    "70.123",  
+            "altitude":    "10.0",  
+            "accuracy":    "0"  
+             },
+            "connectionType": "Macro",
+            "operationStatus": "Serviceable",
+            "numberOfUsers": "15",
+            "interestRealm": "LA",
+            "resourceURL": "http://example.com/exampleAPI/location/v1/zones/zone01/accessPoints/ap001",
+	    "users": [
+    	    { 
+   	      "address": "acr:10.0.0.5", 
+	      "accessPointId": "001010000000000000000000000000000", 
+	      "zoneId": "zone03", 
+	      "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.5" 
+    	    },    
+    	    {    
+	      "address": "acr:10.0.0.6", 
+	      "accessPointId": "001010000000000000000000000000000", 
+	      "zoneId": "zone03", 
+	      "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.6"
+	    }
+    	    ]
+    }
+   ]
+}
+]
+ },
+ "NE3":{
+	 "zones" : [
+{		
+"zoneId": "zone04",
+"accessPoints" : [
+{
+            "accessPointId": "111010000000000000000000000000000",
+            "locationInfo": {
+            "latitude":    "50.123",  
+            "longitude":    "30.123",  
+            "altitude":    "15.0",  
+            "accuracy":    "0"  
+             },
+            "connectionType": "Macro",
+            "operationStatus": "Serviceable",
+            "numberOfUsers": "30",
+            "interestRealm": "LA",
+            "resourceURL": "http://example.com/exampleAPI/location/v1/zones/zone01/accessPoints/ap001",
+	    "users": [
+    	    { 
+   	      "address": "acr:10.0.0.7", 
+	      "accessPointId": "111010000000000000000000000000000", 
+	      "zoneId": "zone04", 
+	      "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.7" 
+    	    },    
+    	    {    
+	      "address": "acr:10.0.0.8", 
+	      "accessPointId": "111010000000000000000000000000000", 
+	      "zoneId": "zone04", 
+	      "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.8"
+	    }
+    	    ]
+    }
+   ]
+}
+
+    
+    ]
+ }
+ }
+ }
+
