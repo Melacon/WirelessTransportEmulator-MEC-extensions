@@ -1,7 +1,10 @@
-# Wireless Transport Emulator
+# Wireless Transport Emulator with MEC extension
 
 OpenYuma Wireless Transport Emulator (WTE) is a wireless transport topology emulation with [OpenYuma](https://github.com/OpenClovis/OpenYuma) NETCONF server,
 based on [ONF TR-532](https://www.opennetworking.org/images/stories/downloads/sdn-resources/technical-reports/TR-532-Microwave-Information-Model-V1.pdf).
+
+Mobile Edge Computing (MEC) is a network architecture concept that enables computing capabilities at the edge of the cellular network.
+The MEC layer was added to the OpenYuma Wireless Transport Emulator (WTE).
 
 ### Description
 
@@ -22,6 +25,10 @@ described in the JSON topology file, are emulated as connections through veth pa
 high-level architecture of the emulator is shown below.
 
 As extension of Wireless Transport Emulator the java based netconf simulator [NetconfServerSimulator](NetconfServerSimulator/README.md) can be used.
+
+For supporting the MEC layer - In addition to the three input files of the WTE (JSON topology file, JSON configuration file, XML configuration), the MEC layer uses:
+a JSON database file, with a specific structure, describing the network element's database.
+Each NE is emulated as a docker container and exposes a REST server used for the MEC layer.
 
 ![logo](./Architecture.png)
 
@@ -405,6 +412,178 @@ An example emulator configuration file `config.json` is shown below:
   "sshPortBase" : 15000,
   "emulatorIpAddress" : "192.168.254.253"
 }
+```
+For the MEC extention support:
+The JSON database file database.json for the databases looks like this:
+```JSON
+
+{
+ "network-elements": 
+ {
+ "NE1": {
+  "zones" : [
+    {
+        "zoneId": "zone01",
+     "accessPoints" : [
+    {
+            "accessPointId": "001010000000000000000000000000001",
+            "locationInfo": {
+            "latitude":    "80.123",  
+            "longitude":    "70.123",  
+            "altitude":    "10.0",  
+            "accuracy":    "0"  
+             },
+            "connectionType": "Macro",
+            "operationStatus": "Serviceable",
+            "numberOfUsers": "15",
+            "interestRealm": "LA",
+            "resourceURL": "http://example.com/exampleAPI/location/v1/zones/zone01/accessPoints/ap001",
+        "users": [
+            { 
+          "address": "acr:10.0.0.1", 
+          "accessPointId": "001010000000000000000000000000001", 
+          "zoneId": "zone01", 
+          "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.1" 
+            },
+            {
+          "address": "acr:10.0.0.2", 
+          "accessPointId": "001010000000000000000000000000001", 
+          "zoneId": "zone01", 
+          "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.2"
+        }
+            ]
+    },
+    {
+          "accessPointId": "101010000000000000000000000000001",
+            "locationInfo": {
+            "latitude":    "90.123",  
+            "longitude":    "80.123",  
+            "altitude":    "15.0",  
+            "accuracy":    "0.1"  
+             },
+            "connectionType": "Macro",
+            "operationStatus": "Serviceable",
+            "numberOfUsers": "20",
+            "interestRealm": "NYC",
+            "resourceURL": "http://example.com/exampleAPI/location/v1/zones/zone01/accessPoints/ap101",
+         "users": [
+            { 
+          "address": "acr:10.0.0.3", 
+          "accessPointId": "101010000000000000000000000000001", 
+          "zoneId": "zone01", 
+          "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.3" 
+        }
+            ]
+    }
+    ]
+     },
+    {
+        "zoneId": "zone02",
+     "accessPoints": [
+    {
+
+            "accessPointId": "110010000000000000000000000000001",
+            "locationInfo": {
+            "latitude":    "85.123",  
+            "longitude":    "75.123",  
+            "altitude":    "20.0",  
+            "accuracy":    "0.3"  
+             },
+            "connectionType": "Macro",
+            "operationStatus": "Serviceable",
+            "numberOfUsers": "10",
+            "interestRealm": "TLV",
+            "resourceURL": "http://example.com/exampleAPI/location/v1/zones/zone01/accessPoints/ap110",
+            "users": [
+            { 
+          "address": "acr:10.0.0.4", 
+          "accessPointId": "110010000000000000000000000000001", 
+          "zoneId": "zone02", 
+          "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.4" 
+
+        }
+            ]
+    }
+   ]
+ }
+ ]
+},
+ "NE2":{
+     "zones" : [
+{
+"zoneId": "zone03",
+"accessPoints" : [
+{
+            "accessPointId": "001010000000000000000000000000000",
+            "locationInfo": {
+            "latitude":    "80.123",  
+            "longitude":    "70.123",  
+            "altitude":    "10.0",  
+            "accuracy":    "0"  
+             },
+            "connectionType": "Macro",
+            "operationStatus": "Serviceable",
+            "numberOfUsers": "15",
+            "interestRealm": "LA",
+            "resourceURL": "http://example.com/exampleAPI/location/v1/zones/zone01/accessPoints/ap001",
+        "users": [
+            { 
+          "address": "acr:10.0.0.5", 
+          "accessPointId": "001010000000000000000000000000000", 
+          "zoneId": "zone03", 
+          "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.5" 
+            },
+            {
+          "address": "acr:10.0.0.6", 
+          "accessPointId": "001010000000000000000000000000000", 
+          "zoneId": "zone03", 
+          "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.6"
+        }
+            ]
+    }
+   ]
+}
+]
+ },
+ "NE3":{
+     "zones" : [
+{
+"zoneId": "zone04",
+"accessPoints" : [
+{
+            "accessPointId": "111010000000000000000000000000000",
+            "locationInfo": {
+            "latitude":    "50.123",  
+            "longitude":    "30.123",  
+            "altitude":    "15.0",  
+            "accuracy":    "0"  
+             },
+            "connectionType": "Macro",
+            "operationStatus": "Serviceable",
+            "numberOfUsers": "30",
+            "interestRealm": "LA",
+            "resourceURL": "http://example.com/exampleAPI/location/v1/zones/zone01/accessPoints/ap001",
+        "users": [
+            { 
+          "address": "acr:10.0.0.7", 
+          "accessPointId": "111010000000000000000000000000000", 
+          "zoneId": "zone04", 
+          "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.7" 
+            },
+            {
+          "address": "acr:10.0.0.8", 
+          "accessPointId": "111010000000000000000000000000000", 
+          "zoneId": "zone04", 
+          "resourceURL": "http://example.com/exampleAPI/location/v1/users/acr%3A10.0.0.8"
+        }
+            ]
+    }
+   ]
+}
+    ]
+ }
+ }
+ }
 ```
 
 The information about the SDN controller, where the emulated NEs automatically
