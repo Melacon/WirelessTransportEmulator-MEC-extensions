@@ -26,11 +26,15 @@ high-level architecture of the emulator is shown below.
 
 As extension of Wireless Transport Emulator the java based netconf simulator [NetconfServerSimulator](NetconfServerSimulator/README.md) can be used.
 
+
+![logo](./Architecture.png)
+
+
 For supporting the MEC layer - In addition to the three input files of the WTE (JSON topology file, JSON configuration file, XML configuration), the MEC layer uses:
 a JSON database file, with a specific structure, describing the network element's database.
 Each NE is emulated as a docker container and exposes a REST server used for the MEC layer.
 
-![logo](./Architecture.png)
+![logo](./MEC-Arch.png)
 
 ### Prerequisites
 
