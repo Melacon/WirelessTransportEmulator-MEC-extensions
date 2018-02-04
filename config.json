@@ -19,6 +19,7 @@
   "automatic-odl-registration" : false,
   "portBasedEmulation" : true,
   "netconfPortBase" : 12000,
+  "restPortBase" : 13000,
   "sshPortBase" : 15000,
   "emulatorIpAddress" : "192.168.254.250"
 }
