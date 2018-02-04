@@ -16,13 +16,14 @@ logger = logging.getLogger(__name__)
 
 class Emulator(metaclass=Singleton):
 
-    def __init__(self, topologyFileName = None, xmlConfigFile = None, configFileName = None):
+    def __init__(self, topologyFileName = None, xmlConfigFile = None, configFileName = None,dbFileName=None):
         self.networkElementList = []
         self.neNamesList = []
         self.topologies = []
         self.controllerList = []
         self.topoJson = None
         self.configJson = None
+        self.dbJson=None
         self.xmlConfigFile = xmlConfigFile
         self.xmlStatusFile = None
         self.registerToOdl = False
@@ -37,7 +38,16 @@ class Emulator(metaclass=Singleton):
                 logger.critical("Could not open topology file=%s", topologyFileName)
                 logger.critical("I/O error({0}): {1}".format(err.errno, err.strerror))
                 printErrorAndExit()
-
+#added
+        if dbFileName is not None:
+            try:
+                with open(dbFileName,'r') as json_data:
+                    self.dbJson = json.load(json_data)
+            except IOError as err:
+                logger.critical("Could not open db file=%s", dbFileName)
+                logger.critical("I/O error({0}): {1}".format(err.errno, err.strerror))
+                printErrorAndExit()
+#added
         if configFileName is not None:
             self.configFileName = configFileName
             try:
@@ -68,11 +78,13 @@ class Emulator(metaclass=Singleton):
         self.macAddressFactory = MacAddressFactory()
 
         self.netconfPortBase = None
+        self.restPortBase = None
         self.sshPortBase = None
         self.portBasedEmulation = False
         self.emulatorIp = None
         if self.configJson['portBasedEmulation'] is True:
             self.netconfPortBase = self.configJson['netconfPortBase']
+            self.restPortBase = self.configJson['restPortBase']
             self.sshPortBase = self.configJson['sshPortBase']
             self.portBasedEmulation = True
             self.emulatorIp = self.configJson['emulatorIpAddress']
@@ -125,11 +137,13 @@ class Emulator(metaclass=Singleton):
             if ne['network-element'].get('ptp-clock') is not None:
                 ptpClock = ne['network-element']['ptp-clock']
             neObj = None
+            neName="ne"+str(neId)
+            #print(neName)
             try:
                 if (dockerType == "JavaNetconfServer"):
                     neObj = JNE.NetconfServerSimulator(neUuid, neId, dockerType, ne['network-element'] )
-                else:
-                    neObj = NE.NetworkElement(neUuid, neId, interfaces, eth_x_conn, dockerType, ptpClock)
+                else:    	                    
+                    neObj = NE.NetworkElement(neUuid, neId, interfaces, eth_x_conn, dockerType, ptpClock,self.dbJson['network-elements'][neUuid])
             except ValueError:
                 logger.critical("Could not create Network Element=%s", neUuid)
                 printErrorAndExit()
@@ -266,5 +280,6 @@ class Emulator(metaclass=Singleton):
                     mem_percentage += float(line)
                 except:
                     continue
+
 
         return mem_percentage
