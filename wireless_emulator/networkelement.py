@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 import copy
 import os
 from io import StringIO
+import json
 
 import wireless_emulator.emulator
 from wireless_emulator.utils import addCoreDefaultValuesToNode, printErrorAndExit, addCoreDefaultStatusValuesToNode
@@ -15,8 +16,9 @@ logger = logging.getLogger(__name__)
 
 class NetworkElement:
 
-    def __init__(self, neUuid, neId, interfaces, eth_x_conn = None, dockerType = None, ptpClock = None):
+    def __init__(self, neUuid, neId, interfaces, eth_x_conn = None, dockerType = None, ptpClock = None , dbDic=None):
         self.uuid = neUuid
+        self.dbDic=dbDic
         self.id = neId
         self.dockerName = self.uuid.replace(" ", "")
         self.dockerType = dockerType
@@ -24,9 +26,10 @@ class NetworkElement:
         if ptpClock is not None:
             self.ptpClockInstance = str(ptpClock[0])
             self.ptpEnabled = True
-            logger.debug("PTP is enabled. Clock instance is %s", self.ptpClockInstance)
+            logger.debug(" PTP is enabled. Clock instance is %s", self.ptpClockInstance)
 
         self.emEnv = wireless_emulator.emulator.Emulator()
+
 
         # TODO handle Eth Cross Connections
         self.eth_x_connect = eth_x_conn
@@ -73,13 +76,16 @@ class NetworkElement:
 
         self.netconfPortNumber = None
         self.sshPortNumber = None
+        self.restPortNumber = None
         if self.emEnv.portBasedEmulation is True:
             self.netconfPortNumber = self.emEnv.netconfPortBase + self.id
+            self.restPortNumber = self.emEnv.restPortBase + self.id
             self.sshPortNumber = self.emEnv.sshPortBase + self.id
             self.managementIPAddressString = self.emEnv.emulatorIp
         else:
             self.netconfPortNumber = 8300
             self.sshPortNumber = 2200
+            self.restPortNumber = 7000
 
         self.interfaces = interfaces
         self.interfaceList = []
@@ -510,6 +516,7 @@ class NetworkElement:
 
     # TODO add support for new docker container
     def createDockerContainer(self):
+
         print("Creating docker container %s..." % (self.dockerName))
 
         if self.emEnv.portBasedEmulation is True:
@@ -519,9 +526,10 @@ class NetworkElement:
                             (self.managementIPAddressString, self.netconfPortNumber,
                              self.managementIPAddressString, self.sshPortNumber, self.dockerName)
             else:
-                stringCmd = "docker create -it --privileged -p %s:%s:830 -p %s:%s:22 --name=%s openyuma" % \
+                stringCmd = "docker create -it --privileged -p %s:%s:830 -p %s:%s:22 -p %s:%s:700 --name=%s openyuma" % \
                             (self.managementIPAddressString, self.netconfPortNumber,
-                             self.managementIPAddressString, self.sshPortNumber, self.dockerName)
+                             self.managementIPAddressString, self.sshPortNumber,
+			     self.managementIPAddressString, self.restPortNumber, self.dockerName)
         else:
             self.createDockerNetwork()
             stringCmd = None
@@ -540,6 +548,7 @@ class NetworkElement:
         if stringCmd is not None:
             self.emEnv.executeCommandInOS(stringCmd)
             logger.debug("Created docker container %s having IP=%s", self.dockerName, self.managementIPAddressString)
+
 
     def createDockerNetwork(self):
 
@@ -637,6 +646,59 @@ class NetworkElement:
         self.xmlConfigurationTree.write('output-config-' + self.dockerName + '.xml')
         self.xmlStatusTree.write('output-status-' + self.dockerName + '.xml')
 
+        #added 
+	#add database file to docker
+        targetPath = "/usr/src/OpenYuma"
+        dbFile = 'dataBase.json'
+        with open(dbFile, 'w') as db:
+                json.dump(self.dbDic, db)
+        stringCmd = "docker cp %s %s:%s" % \
+                    (dbFile, self.dockerName, targetPath)
+        self.emEnv.executeCommandInOS(stringCmd)
+
+	#add alarmTable to docker
+        self.createAlarmTable()
+
+	#add rest file to docker
+        restFile ='rest.py'
+        stringCmd = "docker cp %s %s:%s" % (restFile, self.dockerName, targetPath)
+        self.emEnv.executeCommandInOS(stringCmd)
+
+	#get permission to exec rest.py 
+        command = 'chmod 777 rest.py'
+        stringCmd = "docker exec --detach -it %s %s" % (self.dockerName, command)
+        self.emEnv.executeCommandInOS(stringCmd)
+	
+	#exec rest.py 
+        command = 'python /usr/src/OpenYuma/rest.py'
+        stringCmd = "docker exec --detach -it %s %s" % (self.dockerName, command)
+        self.emEnv.executeCommandInOS(stringCmd)    
+	
+
+
+    def createAlarmTable(self):
+
+        targetPath = "/usr/src/OpenYuma"
+        dbFile = 'alarmTable.json'
+        dict2 = {}
+
+        for zone in self.dbDic['zones']:
+                dict0 = {} 
+                dict1 = {}
+                for ap in zone['accessPoints']:
+                        for usr in ap['users']:	
+                                dict0[usr['address']] = "0"	
+                dict1['isChanged'] = "0"
+                dict1['lastEvent'] = "" 	
+                dict1['users'] = dict0 
+                dict2[zone['zoneId']] = dict1
+        with open(dbFile, 'w') as db:
+                json.dump(dict2, db)
+        stringCmd = "docker cp %s %s:%s" % (dbFile, self.dockerName, targetPath)
+        self.emEnv.executeCommandInOS(stringCmd)
+	
+#added
+
     def addInterfacesInDockerContainer(self):
 
         for intf in self.interfaceList:
@@ -674,7 +736,6 @@ class NetworkElement:
 
             command = "ip link set %s master %s" % (serverName, interfaceObj.getInterfaceName())
             self.executeCommandInContainer(command)
-
         command = "ip link set %s up" % interfaceObj.getInterfaceName()
         self.executeCommandInContainer(command)
 
