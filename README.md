@@ -590,10 +590,14 @@ The JSON database file database.json for the databases looks like this:
 ```
 REST requests examples:
 - GET 192.168.56.1:13001/exampleAPI/location/v1/zones/zone01/accessPoints
+
 In this GET request we ask to get from NE1 (port 13001) through the Emulator IP at 192.168.56.1 - information about all NE1 access points in zone1.
 
 - GET 192.168.56.1:13002/exampleAPI/location/v1/users
+
 In this GET request we ask to get from NE2 (port 13002) -  information about all the users in this NE.
+
+
 
 
 The information about the SDN controller, where the emulated NEs automatically
